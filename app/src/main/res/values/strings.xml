@@ -4,4 +4,5 @@
     <string name="options_card_text">O que gostaria de fazer?</string>
     <string name="show_pins">Visualizar pins</string>
     <string name="add_pin_title">Adicionar o pin</string>
+    <string name="current_location_string">GPS: %s, %s</string>
 </resources>

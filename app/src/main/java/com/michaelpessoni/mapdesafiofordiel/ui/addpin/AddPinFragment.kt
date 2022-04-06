@@ -7,16 +7,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.mapbox.maps.MapView
 import com.mapbox.maps.plugin.Plugin
 import com.michaelpessoni.mapdesafiofordiel.R
+import com.michaelpessoni.mapdesafiofordiel.databinding.AddPinCardBinding
 import com.michaelpessoni.mapdesafiofordiel.databinding.AddPinFragmentBinding
+import com.michaelpessoni.mapdesafiofordiel.ui.userlocation.MapViewModel
 
 class AddPinFragment : Fragment() {
 
 
     private lateinit var binding: AddPinFragmentBinding
-    private lateinit var viewModel: AddPinViewModel
+    private lateinit var cardBinding: AddPinCardBinding
+    private lateinit var viewModel: MapViewModel
     private lateinit var mapView: MapView
 
     override fun onCreateView(
@@ -30,9 +34,22 @@ class AddPinFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this).get(AddPinViewModel::class.java)
+        viewModel = ViewModelProvider(this)[MapViewModel::class.java]
 
         mapView = requireView().findViewById(R.id.mapView)
+
+        viewModel.mapView = mapView
+
+        viewModel.onMapReady()
+
+        viewModel.addPinToMap(this.requireContext())
+
+        viewModel.currentLatitude.observe(viewLifecycleOwner, Observer { latitude ->
+            cardBinding.latitudeTv.text = latitude.toString()
+        })
+        viewModel.currentLongitude.observe(viewLifecycleOwner, Observer { longitude ->
+            cardBinding.longitudeTv.text = longitude.toString()
+        })
 
 
     }

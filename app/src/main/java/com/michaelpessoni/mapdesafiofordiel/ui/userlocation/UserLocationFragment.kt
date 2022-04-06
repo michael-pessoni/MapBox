@@ -21,7 +21,7 @@ class UserLocationFragment : Fragment() {
 
     private lateinit var mapView: MapView
     private lateinit var binding : UserLocationFragmentBinding
-    private lateinit var viewModel: UserLocationViewModel
+    private lateinit var viewModel: MapViewModel
     private lateinit var locationPermissionHelper: LocationPermissionHelper
 
     override fun onCreateView(
@@ -40,14 +40,15 @@ class UserLocationFragment : Fragment() {
 
         mapView = requireView().findViewById(R.id.mapView)
 
-        viewModel = UserLocationViewModel()
+        viewModel = MapViewModel()
 
         viewModel.mapView = mapView
 
         //Verifies the location permission
         locationPermissionHelper = LocationPermissionHelper(WeakReference(this.activity))
         locationPermissionHelper.checkPermissions {
-            viewModel.onMapReady(this.requireContext())
+            viewModel.onMapReady()
+            viewModel.initLocationPuck(this.requireContext())
         }
 
         viewModel.cameraTrackDismissed.observe(viewLifecycleOwner, Observer {
