@@ -1,9 +1,10 @@
-package com.michaelpessoni.mapdesafiofordiel
+package com.michaelpessoni.mapdesafiofordiel.ui.userlocation
 
 import android.content.Context
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
@@ -15,31 +16,32 @@ import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
+import com.michaelpessoni.mapdesafiofordiel.R
 import com.michaelpessoni.mapdesafiofordiel.util.Event
 
-class UserLocationViewModel {
+class UserLocationViewModel : ViewModel(){
     lateinit var mapView: MapView
 
     // Encapsulated LiveData to notify that onCameraTrackDismiss was called
     private val _cameraTrackDismissed = MutableLiveData<Boolean>()
     val cameraTrackDismissed: LiveData<Boolean>
-    get() = _cameraTrackDismissed
+        get() = _cameraTrackDismissed
 
     // LiveData to expose onCLick event
     private val _addNewPinEvent = MutableLiveData<Event<Unit>>()
     val addNewPinEvent : LiveData<Event<Unit>>
-    get() = _addNewPinEvent
+        get() = _addNewPinEvent
 
     private val _showPinsEvent = MutableLiveData<Event<Unit>>()
     val showPinsEvent : LiveData<Event<Unit>>
-    get() = _showPinsEvent
+        get() = _showPinsEvent
 
 
-    private val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
+    protected val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
         mapView.getMapboxMap().setCamera(CameraOptions.Builder().bearing(it).build())
     }
 
-    private val onIndicatorPositionChangedListener = OnIndicatorPositionChangedListener {
+    protected val onIndicatorPositionChangedListener = OnIndicatorPositionChangedListener {
         mapView.getMapboxMap().setCamera(CameraOptions.Builder().center(it).build())
         mapView.gestures.focalPoint = mapView.getMapboxMap().pixelForCoordinate(it)
     }
@@ -56,7 +58,7 @@ class UserLocationViewModel {
         override fun onMoveEnd(detector: MoveGestureDetector) {}
     }
 
-    fun onMapReady(context: Context) {
+    open fun onMapReady(context: Context) {
         mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
                 .zoom(14.0)
@@ -72,6 +74,25 @@ class UserLocationViewModel {
 
     private fun setupGesturesListener() {
         mapView.gestures.addOnMoveListener(onMoveListener)
+    }
+
+
+
+    fun onCameraTrackingDismissed() {
+        _cameraTrackDismissed.value = true
+        mapView.location
+            .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
+        mapView.location
+            .removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
+        mapView.gestures.removeOnMoveListener(onMoveListener)
+    }
+
+    fun onDestroy() {
+        mapView.location
+            .removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
+//        mapView.location
+//            .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
+//        mapView.gestures.removeOnMoveListener(onMoveListener)
     }
 
     private fun initLocationComponent(context: Context) {
@@ -104,31 +125,4 @@ class UserLocationViewModel {
         locationComponentPlugin.addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
         locationComponentPlugin.addOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
     }
-
-    fun onCameraTrackingDismissed() {
-        _cameraTrackDismissed.value = true
-        mapView.location
-            .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
-        mapView.location
-            .removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
-        mapView.gestures.removeOnMoveListener(onMoveListener)
-    }
-
-    fun onDestroy() {
-        mapView.location
-            .removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
-        mapView.location
-            .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
-        mapView.gestures.removeOnMoveListener(onMoveListener)
-    }
-
-    fun onAddNewPin() {
-        _addNewPinEvent.value = Event(Unit)
-    }
-
-    fun onShowPins() {
-        _showPinsEvent.value = Event(Unit)
-    }
-
-
 }

@@ -5,7 +5,7 @@
     <data>
         <variable
             name="viewmodel"
-            type="com.michaelpessoni.mapdesafiofordiel.UserLocationViewModel" />
+            type="com.michaelpessoni.mapdesafiofordiel.ui.userlocation.UserLocationViewModel" />
     </data>
 
 <androidx.cardview.widget.CardView
@@ -69,8 +69,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="16dp"
-                app:cardCornerRadius="15dp"
-                android:onClick="@{() -> viewmodel.onShowPins()}">
+                app:cardCornerRadius="15dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -107,7 +106,7 @@
                 android:focusable="true"
                 android:padding="16dp"
                 app:cardCornerRadius="15dp"
-                android:onClick="@{() -> viewmodel.onAddNewPin()}">
+                >
 
                 <LinearLayout
                     android:layout_width="wrap_content"

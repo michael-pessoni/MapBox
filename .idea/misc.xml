@@ -4,10 +4,16 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable-v24/mapbox_mylocation_bg_shape.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/add_pin_icon.xml" value="0.346" />
         <entry key="app/src/main/res/drawable/location_puck.xml" value="0.19" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.3101851851851852" />
+        <entry key="app/src/main/res/layout/add_pin_card.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/add_pin_fragment.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_user_location.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/mapview.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/options_bottom_sheet.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/options_fragment.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/user_location_fragment.xml" value="0.18177083333333333" />
       </map>
     </option>
   </component>

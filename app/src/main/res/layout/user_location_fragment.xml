@@ -2,19 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".UserLocationActivity">
+    tools:context=".ui.userlocation.UserLocationFragment">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.mapbox.maps.MapView xmlns:mapbox="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/mapView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            mapbox:mapbox_cameraTargetLat="40.7128"
-            mapbox:mapbox_cameraTargetLng="-74.0060"
-            mapbox:mapbox_cameraZoom="9.0" />
+        <include layout="@layout/mapview" />
 
         <include layout="@layout/options_bottom_sheet"/>
 

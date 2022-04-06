@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph.xml"
+    app:startDestination="@id/userLocationFragment">
+
+    <fragment
+        android:id="@+id/userLocationFragment"
+        android:name="com.michaelpessoni.mapdesafiofordiel.ui.userlocation.UserLocationFragment"
+        android:label="fragment_user_location"
+        tools:layout="@layout/user_location_fragment" >
+        <action
+            android:id="@+id/action_userLocationFragment_to_addPinFragment2"
+            app:destination="@id/addPinFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/addPinFragment2"
+        android:name="com.michaelpessoni.mapdesafiofordiel.ui.addpin.AddPinFragment"
+        android:label="add_pin_fragment"
+        tools:layout="@layout/add_pin_fragment" />
+</navigation>
