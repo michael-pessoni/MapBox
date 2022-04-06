@@ -10,6 +10,7 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.3101851851851852" />
         <entry key="app/src/main/res/layout/add_pin_card.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/add_pin_fragment.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_show_pins.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/fragment_user_location.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/mapview.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/options_bottom_sheet.xml" value="0.35625" />

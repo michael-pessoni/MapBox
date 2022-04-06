@@ -6,20 +6,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.mapbox.maps.MapView
-import com.mapbox.maps.plugin.Plugin
 import com.michaelpessoni.mapdesafiofordiel.R
 import com.michaelpessoni.mapdesafiofordiel.databinding.AddPinCardBinding
 import com.michaelpessoni.mapdesafiofordiel.databinding.AddPinFragmentBinding
-import com.michaelpessoni.mapdesafiofordiel.ui.userlocation.MapViewModel
+import com.michaelpessoni.mapdesafiofordiel.ui.MapViewModel
 
 class AddPinFragment : Fragment() {
 
 
     private lateinit var binding: AddPinFragmentBinding
-    private lateinit var cardBinding: AddPinCardBinding
     private lateinit var viewModel: MapViewModel
     private lateinit var mapView: MapView
 
@@ -45,10 +44,12 @@ class AddPinFragment : Fragment() {
         viewModel.addPinToMap(this.requireContext())
 
         viewModel.currentLatitude.observe(viewLifecycleOwner, Observer { latitude ->
-            cardBinding.latitudeTv.text = latitude.toString()
+            val latitudeTv = requireView().findViewById<TextView>(R.id.latitude_tv)
+            latitudeTv.text = latitude.toString()
         })
         viewModel.currentLongitude.observe(viewLifecycleOwner, Observer { longitude ->
-            cardBinding.longitudeTv.text = longitude.toString()
+            val longitudeTv = requireView().findViewById<TextView>(R.id.longitude_tv)
+            longitudeTv.text = longitude.toString()
         })
 
 

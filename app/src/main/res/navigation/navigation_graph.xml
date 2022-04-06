@@ -11,12 +11,20 @@
         android:label="fragment_user_location"
         tools:layout="@layout/user_location_fragment" >
         <action
-            android:id="@+id/action_userLocationFragment_to_addPinFragment2"
+            android:id="@+id/action_userLocationFragment_to_addPinFragment"
             app:destination="@id/addPinFragment2" />
+        <action
+            android:id="@+id/action_userLocationFragment_to_showPinsFragment"
+            app:destination="@id/showPinsFragment" />
     </fragment>
     <fragment
         android:id="@+id/addPinFragment2"
         android:name="com.michaelpessoni.mapdesafiofordiel.ui.addpin.AddPinFragment"
         android:label="add_pin_fragment"
         tools:layout="@layout/add_pin_fragment" />
+    <fragment
+        android:id="@+id/showPinsFragment"
+        android:name="com.michaelpessoni.mapdesafiofordiel.ui.showpins.ShowPinsFragment"
+        android:label="show_pins_fragment"
+        tools:layout="@layout/show_pins_fragment" />
 </navigation>

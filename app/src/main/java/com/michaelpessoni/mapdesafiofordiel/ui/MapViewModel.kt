@@ -1,4 +1,4 @@
-package com.michaelpessoni.mapdesafiofordiel.ui.userlocation
+package com.michaelpessoni.mapdesafiofordiel.ui
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -19,7 +19,9 @@ import com.mapbox.maps.extension.style.expressions.dsl.generated.interpolate
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.PolylineAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import com.mapbox.maps.plugin.annotation.generated.createPolylineAnnotationManager
 import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
@@ -32,23 +34,12 @@ import com.michaelpessoni.mapdesafiofordiel.util.Event
 class MapViewModel : ViewModel() {
     lateinit var mapView: MapView
 
-
     // Encapsulated LiveData to notify that onCameraTrackDismiss was called
     private val _cameraTrackDismissed = MutableLiveData<Boolean>()
     val cameraTrackDismissed: LiveData<Boolean>
         get() = _cameraTrackDismissed
 
-    // LiveData to expose onCLick event
-    private val _addNewPinEvent = MutableLiveData<Event<Unit>>()
-    val addNewPinEvent: LiveData<Event<Unit>>
-        get() = _addNewPinEvent
-
-    private val _showPinsEvent = MutableLiveData<Event<Unit>>()
-    val showPinsEvent: LiveData<Event<Unit>>
-        get() = _showPinsEvent
-
-
-    protected val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
+    private val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
         mapView.getMapboxMap().setCamera(CameraOptions.Builder().bearing(it).build())
     }
 
@@ -63,12 +54,14 @@ class MapViewModel : ViewModel() {
         }
 
         override fun onMove(detector: MoveGestureDetector): Boolean {
-            _currentLongitude.value = mapView.getMapboxMap().cameraState.center.longitude()
-            _currentLatitude.value = mapView.getMapboxMap().cameraState.center.latitude()
+
             return false
         }
 
-        override fun onMoveEnd(detector: MoveGestureDetector) {}
+        override fun onMoveEnd(detector: MoveGestureDetector) {
+            _currentLongitude.value = mapView.getMapboxMap().cameraState.center.longitude()
+            _currentLatitude.value = mapView.getMapboxMap().cameraState.center.latitude()
+        }
     }
 
     fun onMapReady() {
@@ -208,5 +201,21 @@ class MapViewModel : ViewModel() {
             drawable.draw(canvas)
             bitmap
         }
+    }
+
+    fun showAllPins() {
+        val annotationApi = mapView.annotations
+        val polylineAnnotationManager = annotationApi.createPolylineAnnotationManager()
+        // Define a list of geographic coordinates to be connected.
+        val points = listOf(
+            Point.fromLngLat(-16.6868   , -49.2648),
+            Point.fromLngLat(-16.6820, -49.2645)
+        )
+        // Set options for the resulting line layer.
+        val polylineAnnotationOptions: PolylineAnnotationOptions = PolylineAnnotationOptions()
+            .withPoints(points)
+            // Style the line that will be added to the map.
+            .withLineColor("#ee4e8b")
+        polylineAnnotationManager.create(polylineAnnotationOptions)
     }
 }
