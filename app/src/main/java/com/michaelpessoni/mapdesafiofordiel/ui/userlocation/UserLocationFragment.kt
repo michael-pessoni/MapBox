@@ -13,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import com.mapbox.maps.MapView
 import com.michaelpessoni.mapdesafiofordiel.R
 import com.michaelpessoni.mapdesafiofordiel.data.local.PinsDatabase
-import com.michaelpessoni.mapdesafiofordiel.databinding.OptionsBottomSheetBinding
 import com.michaelpessoni.mapdesafiofordiel.databinding.UserLocationFragmentBinding
 import com.michaelpessoni.mapdesafiofordiel.ui.MapViewModel
 import com.michaelpessoni.mapdesafiofordiel.util.LocationPermissionHelper
@@ -23,7 +22,7 @@ import java.lang.ref.WeakReference
 class UserLocationFragment : Fragment() {
 
     private lateinit var mapView: MapView
-    private lateinit var binding : UserLocationFragmentBinding
+    private lateinit var binding: UserLocationFragmentBinding
     private lateinit var viewModel: MapViewModel
     private lateinit var locationPermissionHelper: LocationPermissionHelper
 
@@ -31,9 +30,11 @@ class UserLocationFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = DataBindingUtil.inflate(inflater,
-            R.layout.user_location_fragment, container, false)
+    ): View {
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.user_location_fragment, container, false
+        )
 
         return binding.root
     }
@@ -41,7 +42,8 @@ class UserLocationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val dataSource = PinsDatabase.getInstance(this.requireActivity().application).pinsDatabaseDAO
+        val dataSource =
+            PinsDatabase.getInstance(this.requireActivity().application).pinsDatabaseDAO
         mapView = requireView().findViewById(R.id.mapView)
         viewModel = MapViewModel(dataSource, mapView)
 

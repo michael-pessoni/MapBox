@@ -17,10 +17,10 @@ abstract class PinsDatabase : RoomDatabase() {
         private var INSTANCE: PinsDatabase? = null
 
         fun getInstance(context: Context): PinsDatabase {
-            synchronized(this){
+            synchronized(this) {
                 var instance = INSTANCE
 
-                if (instance == null){
+                if (instance == null) {
                     instance = Room.databaseBuilder(
                         context.applicationContext,
                         PinsDatabase::class.java,

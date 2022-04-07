@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewmodel"
             type="com.michaelpessoni.mapdesafiofordiel.ui.MapViewModel" />
@@ -36,24 +37,26 @@
                 android:text="GPS:"
                 app:layout_constraintStart_toStartOf="@id/add_pin_title_tv"
                 app:layout_constraintTop_toBottomOf="@id/add_pin_title_tv" />
+
             <TextView
                 android:id="@+id/latitude_tv"
+                style="@style/TextAppearance.Material3.TitleMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 app:layout_constraintStart_toEndOf="@+id/gps_tv"
                 app:layout_constraintTop_toTopOf="@id/gps_tv"
-                tools:text="27.000"
-                style="@style/TextAppearance.Material3.TitleMedium" />
+                tools:text="27.000" />
+
             <TextView
                 android:id="@+id/longitude_tv"
+                style="@style/TextAppearance.Material3.TitleMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 app:layout_constraintStart_toEndOf="@id/latitude_tv"
                 app:layout_constraintTop_toTopOf="@id/gps_tv"
-                tools:text="27.000"
-                style="@style/TextAppearance.Material3.TitleMedium" />
+                tools:text="27.000" />
 
             <ImageButton
                 android:id="@+id/save_pin_button"

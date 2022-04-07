@@ -1,13 +1,14 @@
 package com.michaelpessoni.mapdesafiofordiel.ui.addpin
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.mapbox.maps.MapView
@@ -53,13 +54,18 @@ class AddPinFragment : Fragment() {
     private fun setOnClickListener() {
         val savePinButton = requireView().findViewById<ImageButton>(R.id.save_pin_button)
         savePinButton.setOnClickListener {
+
             // Get latitude an longitude from the screen
             val latitude = mapView.getMapboxMap().cameraState.center.latitude()
             val longitude = mapView.getMapboxMap().cameraState.center.longitude()
+
             // Create a new pin to save
             val pin = Pin(latitude, longitude)
             viewModel.savePin(pin)
             navigateBack()
+
+            // Show success
+            Toast.makeText(this.requireContext(), "Pin salvo!", Toast.LENGTH_SHORT).show()
         }
     }
 

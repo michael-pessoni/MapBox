@@ -14,6 +14,6 @@ interface PinsDAO {
     suspend fun insert(pin: Pin)
 
     @Query("SELECT * FROM pins_table")
-    fun observeAllPins() : LiveData<List<Pin>>
+    fun observeAllPins(): LiveData<List<Pin>>
 
 }
