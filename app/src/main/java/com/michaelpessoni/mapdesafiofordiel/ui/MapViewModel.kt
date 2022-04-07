@@ -10,6 +10,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
@@ -29,10 +30,12 @@ import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListen
 import com.mapbox.maps.plugin.locationcomponent.generated.LocationComponentSettings
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.michaelpessoni.mapdesafiofordiel.R
-import com.michaelpessoni.mapdesafiofordiel.util.Event
+import com.michaelpessoni.mapdesafiofordiel.data.Pin
+import com.michaelpessoni.mapdesafiofordiel.data.local.PinsDAO
+import kotlinx.coroutines.launch
 
-class MapViewModel : ViewModel() {
-    lateinit var mapView: MapView
+class MapViewModel(private val dataSource: PinsDAO, private val mapView: MapView) : ViewModel() {
+
 
     // Encapsulated LiveData to notify that onCameraTrackDismiss was called
     private val _cameraTrackDismissed = MutableLiveData<Boolean>()
@@ -207,15 +210,29 @@ class MapViewModel : ViewModel() {
         val annotationApi = mapView.annotations
         val polylineAnnotationManager = annotationApi.createPolylineAnnotationManager()
         // Define a list of geographic coordinates to be connected.
-        val points = listOf(
-            Point.fromLngLat(-16.6868   , -49.2648),
-            Point.fromLngLat(-16.6820, -49.2645)
-        )
+        val points = setPinsToShow(pinsList.value)
         // Set options for the resulting line layer.
         val polylineAnnotationOptions: PolylineAnnotationOptions = PolylineAnnotationOptions()
             .withPoints(points)
             // Style the line that will be added to the map.
             .withLineColor("#ee4e8b")
         polylineAnnotationManager.create(polylineAnnotationOptions)
+    }
+
+    // Observe pins from database
+    private val pinsList = dataSource.observeAllPins()
+
+    // Transform pin into Point to be showed on map
+    fun setPinsToShow(pinsList: List<Pin>?) : List<Point> {
+        val pointsList: List<Point>? = pinsList?.map { pin ->
+            Point.fromLngLat(pin.longitude, pin.latitude)}
+
+        return pointsList ?: emptyList()
+    }
+
+    fun savePin(pin: Pin) {
+        viewModelScope.launch {
+            dataSource.insert(pin)
+        }
     }
 }

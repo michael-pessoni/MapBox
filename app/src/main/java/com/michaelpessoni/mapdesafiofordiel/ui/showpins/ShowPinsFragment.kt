@@ -6,9 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import com.mapbox.maps.MAPBOX_ACCESS_TOKEN_RESOURCE_NAME
 import com.mapbox.maps.MapView
 import com.michaelpessoni.mapdesafiofordiel.R
+import com.michaelpessoni.mapdesafiofordiel.data.local.PinsDatabase
 import com.michaelpessoni.mapdesafiofordiel.databinding.ShowPinsFragmentBinding
 import com.michaelpessoni.mapdesafiofordiel.ui.MapViewModel
 
@@ -28,10 +28,10 @@ class ShowPinsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = MapViewModel()
-        mapView = requireView().findViewById(R.id.mapView)
 
-        viewModel.mapView = mapView
+        val dataSource = PinsDatabase.getInstance(this.requireContext()).pinsDatabaseDAO
+        mapView = requireView().findViewById(R.id.mapView)
+        viewModel = MapViewModel(dataSource, mapView)
 
         viewModel.onMapReady()
 

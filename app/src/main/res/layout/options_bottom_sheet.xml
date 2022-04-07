@@ -126,7 +126,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginVertical="8dp"
-                        android:text="@string/show_pins"
+                        android:text="Adicionar pin"
                         android:textColor="@color/white" />
                 </LinearLayout>
 

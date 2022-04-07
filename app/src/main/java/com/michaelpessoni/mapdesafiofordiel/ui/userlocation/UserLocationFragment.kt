@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.mapbox.maps.MapView
 import com.michaelpessoni.mapdesafiofordiel.R
+import com.michaelpessoni.mapdesafiofordiel.data.local.PinsDatabase
 import com.michaelpessoni.mapdesafiofordiel.databinding.OptionsBottomSheetBinding
 import com.michaelpessoni.mapdesafiofordiel.databinding.UserLocationFragmentBinding
 import com.michaelpessoni.mapdesafiofordiel.ui.MapViewModel
@@ -40,11 +41,9 @@ class UserLocationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val dataSource = PinsDatabase.getInstance(this.requireActivity().application).pinsDatabaseDAO
         mapView = requireView().findViewById(R.id.mapView)
-
-        viewModel = MapViewModel()
-
-        viewModel.mapView = mapView
+        viewModel = MapViewModel(dataSource, mapView)
 
         checkLocationPermission()
 
