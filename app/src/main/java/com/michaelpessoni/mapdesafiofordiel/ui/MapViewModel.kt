@@ -16,6 +16,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
+import com.mapbox.maps.extension.observable.eventdata.CameraChangedEventData
 import com.mapbox.maps.extension.style.expressions.dsl.generated.interpolate
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.annotation.annotations
@@ -23,6 +24,7 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.PolylineAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.createPolylineAnnotationManager
+import com.mapbox.maps.plugin.delegates.listeners.OnCameraChangeListener
 import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
@@ -141,6 +143,7 @@ class MapViewModel(private val dataSource: PinsDAO, private val mapView: MapView
     //Setup listeners to user interactions
     private fun setupGesturesListener() {
         mapView.gestures.addOnMoveListener(onMoveListener)
+        mapView.getMapboxMap().addOnCameraChangeListener(onCameraChangeListener)
     }
 
     // create listeners for screen move
@@ -155,9 +158,13 @@ class MapViewModel(private val dataSource: PinsDAO, private val mapView: MapView
         }
 
         override fun onMoveEnd(detector: MoveGestureDetector) {
-            _currentLongitude.value = mapView.getMapboxMap().cameraState.center.longitude()
-            _currentLatitude.value = mapView.getMapboxMap().cameraState.center.latitude()
+
         }
+    }
+
+    private val onCameraChangeListener = OnCameraChangeListener {
+        _currentLongitude.value = mapView.getMapboxMap().cameraState.center.longitude()
+        _currentLatitude.value = mapView.getMapboxMap().cameraState.center.latitude()
     }
 
     private val _currentLongitude = MutableLiveData<Double>()
@@ -179,7 +186,7 @@ class MapViewModel(private val dataSource: PinsDAO, private val mapView: MapView
             .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
         mapView.location
             .removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
-        mapView.gestures.removeOnMoveListener(onMoveListener)
+        // mapView.gestures.removeOnMoveListener(onMoveListener)
     }
 
     fun onDestroy() {
@@ -191,29 +198,37 @@ class MapViewModel(private val dataSource: PinsDAO, private val mapView: MapView
     }
 
     fun addPinToMap(context: Context) {
-        val currentLocation: Point = mapView.getMapboxMap().cameraState.center
-        // Create an instance of the Annotation API and get the PointAnnotationManager.
-        bitmapFromDrawableRes(
-            context,
-            R.drawable.new_pin_icon
-        )?.let { bitmap ->
-            val annotationApi = mapView.annotations
-            val pointAnnotationManager = annotationApi.createPointAnnotationManager()
-            // Set options for the resulting symbol layer.
-            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
-                // Define a geographic coordinate.
-                .withPoint(
-                    Point.fromLngLat(
-                        currentLocation.longitude(),
-                        currentLocation.latitude()
-                    )
-                )
-                // Specify the bitmap you assigned to the point annotation
-                // The bitmap will be added to map style automatically.
-                .withIconImage(bitmap)
-            // Add the resulting pointAnnotation to the map.
-            pointAnnotationManager.create(pointAnnotationOptions)
-        }
+
+         // Create an instance of the Annotation API and get the PointAnnotationManager.
+        mapView.getMapboxMap().loadStyleUri(
+            Style.MAPBOX_STREETS,
+            object : Style.OnStyleLoaded {
+                override fun onStyleLoaded(style: Style) {
+                    bitmapFromDrawableRes(
+                        context,
+                        R.drawable.new_pin_icon
+                    )?.let { bitmap ->
+                        val annotationApi = mapView.annotations
+                        val pointAnnotationManager = annotationApi.createPointAnnotationManager()
+                        // Set options for the resulting symbol layer.
+                        val pointAnnotationOptions: PointAnnotationOptions =
+                            PointAnnotationOptions()
+                                // Define a geographic coordinate.
+                                .withPoint(
+                                    Point.fromLngLat(
+                                        mapView.getMapboxMap().cameraState.center.longitude(),
+                                        mapView.getMapboxMap().cameraState.center.latitude()
+                                    )
+                                )
+                                // Specify the bitmap you assigned to the point annotation
+                                // The bitmap will be added to map style automatically.
+                                .withIconImage(bitmap)
+                        // Add the resulting pointAnnotation to the map.
+                        pointAnnotationManager.create(pointAnnotationOptions)
+                    }
+                }
+            }
+        )
     }
 
     private fun bitmapFromDrawableRes(context: Context, @DrawableRes resourceId: Int) =
@@ -239,5 +254,6 @@ class MapViewModel(private val dataSource: PinsDAO, private val mapView: MapView
             bitmap
         }
     }
+
 
 }
