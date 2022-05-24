@@ -30,5 +30,9 @@
         android:id="@+id/showPinsFragment"
         android:name="com.michaelpessoni.mapdesafiofordiel.ui.showpins.ShowPinsFragment"
         android:label="show_pins_fragment"
-        tools:layout="@layout/show_pins_fragment" />
+        tools:layout="@layout/show_pins_fragment" >
+        <action
+            android:id="@+id/action_showPinsFragment_to_userLocationFragment"
+            app:destination="@id/userLocationFragment" />
+    </fragment>
 </navigation>

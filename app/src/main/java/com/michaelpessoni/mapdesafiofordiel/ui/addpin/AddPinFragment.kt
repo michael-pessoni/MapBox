@@ -9,21 +9,23 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.mapbox.maps.MapView
+import com.mapbox.maps.extension.observable.eventdata.CameraChangedEventData
+import com.mapbox.maps.plugin.delegates.listeners.OnCameraChangeListener
 import com.michaelpessoni.mapdesafiofordiel.R
 import com.michaelpessoni.mapdesafiofordiel.data.Pin
 import com.michaelpessoni.mapdesafiofordiel.data.local.PinsDatabase
 import com.michaelpessoni.mapdesafiofordiel.databinding.AddPinFragmentBinding
-import com.michaelpessoni.mapdesafiofordiel.ui.MapViewModel
 
-class AddPinFragment : Fragment() {
+class AddPinFragment : Fragment(), OnCameraChangeListener {
 
 
     private lateinit var binding: AddPinFragmentBinding
-    private lateinit var viewModel: MapViewModel
+    private lateinit var viewModel: AddPinViewModel
     private lateinit var mapView: MapView
+    private lateinit var currentLocation: com.mapbox.geojson.Point
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,18 +39,29 @@ class AddPinFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val dataSource = PinsDatabase.getInstance(this.requireContext()).pinsDatabaseDAO
+        val dataSource = PinsDatabase.getInstance(requireActivity().application).pinsDatabaseDAO
         mapView = requireView().findViewById(R.id.mapView)
-        viewModel = MapViewModel(dataSource, mapView)
+        viewModel = ViewModelProvider(this,AddPinViewModelFactory(dataSource, mapView))[AddPinViewModel::class.java]
 
-        viewModel.onMapReady()
+        viewModel.onMapReady(requireContext())
 
-        viewModel.addPinToMap(this.requireContext())
+        currentLocation = mapView.getMapboxMap().cameraState.center
+
 
         setCoordinatesText()
 
         setOnClickListener()
 
+        setOnCameraChangeListener()
+
+    }
+
+    private fun setOnCameraChangeListener() {
+        val onCameraChangeListener = OnCameraChangeListener {
+            onCameraChanged(it)
+        }
+
+        mapView.getMapboxMap().addOnCameraChangeListener(onCameraChangeListener)
     }
 
     private fun setOnClickListener() {
@@ -62,6 +75,7 @@ class AddPinFragment : Fragment() {
             // Create a new pin to save
             val pin = Pin(latitude, longitude)
             viewModel.savePin(pin)
+
             navigateBack()
 
             // Show success
@@ -73,16 +87,25 @@ class AddPinFragment : Fragment() {
         findNavController().navigate(R.id.action_addPinFragment2_to_userLocationFragment)
     }
 
+
+
     // Set coordinates to TextViews
     private fun setCoordinatesText() {
-        viewModel.currentLatitude.observe(viewLifecycleOwner, Observer { latitude ->
             val latitudeTv = requireView().findViewById<TextView>(R.id.latitude_tv)
-            latitudeTv.text = latitude.toString()
-        })
-        viewModel.currentLongitude.observe(viewLifecycleOwner, Observer { longitude ->
+        latitudeTv.text = currentLocation.latitude().toString()
+
             val longitudeTv = requireView().findViewById<TextView>(R.id.longitude_tv)
-            longitudeTv.text = longitude.toString()
-        })
+        longitudeTv.text = currentLocation.longitude().toString()
+
+    }
+
+    override fun onCameraChanged(eventData: CameraChangedEventData) {
+        currentLocation = mapView.getMapboxMap().cameraState.center
+        val latitudeTv = requireView().findViewById<TextView>(R.id.latitude_tv)
+        latitudeTv.text = currentLocation.latitude().toString()
+        val longitudeTv = requireView().findViewById<TextView>(R.id.longitude_tv)
+        longitudeTv.text = currentLocation.longitude().toString()
+
     }
 
 
