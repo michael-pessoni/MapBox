@@ -6,7 +6,7 @@
 
         <variable
             name="viewmodel"
-            type="com.michaelpessoni.mapdesafiofordiel.ui.MapViewModel" />
+            type="com.michaelpessoni.mapdesafiofordiel.ui.userlocation.UserLocationViewModel" />
     </data>
 
     <androidx.cardview.widget.CardView

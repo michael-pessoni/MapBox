@@ -9,12 +9,12 @@ import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.mapbox.maps.MapView
 import com.michaelpessoni.mapdesafiofordiel.R
 import com.michaelpessoni.mapdesafiofordiel.data.local.PinsDatabase
 import com.michaelpessoni.mapdesafiofordiel.databinding.UserLocationFragmentBinding
-import com.michaelpessoni.mapdesafiofordiel.ui.MapViewModel
 import com.michaelpessoni.mapdesafiofordiel.util.LocationPermissionHelper
 import java.lang.ref.WeakReference
 
@@ -23,7 +23,7 @@ class UserLocationFragment : Fragment() {
 
     private lateinit var mapView: MapView
     private lateinit var binding: UserLocationFragmentBinding
-    private lateinit var viewModel: MapViewModel
+    private lateinit var viewModel: UserLocationViewModel
     private lateinit var locationPermissionHelper: LocationPermissionHelper
 
     override fun onCreateView(
@@ -42,10 +42,9 @@ class UserLocationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val dataSource =
-            PinsDatabase.getInstance(this.requireActivity().application).pinsDatabaseDAO
+        val dataSource = PinsDatabase.getInstance(requireActivity().application).pinsDatabaseDAO
         mapView = requireView().findViewById(R.id.mapView)
-        viewModel = MapViewModel(dataSource, mapView)
+        viewModel = ViewModelProvider(this, UserLocationViewModelFactory(dataSource, mapView))[UserLocationViewModel::class.java]
 
         checkLocationPermission()
 
@@ -77,8 +76,11 @@ class UserLocationFragment : Fragment() {
 
         val showPinsButton = requireView().findViewById<CardView>(R.id.show_pins_button)
         showPinsButton.setOnClickListener {
-            findNavController().navigate(R.id.action_userLocationFragment_to_showPinsFragment)
-        }
+              findNavController().navigate(R.id.action_userLocationFragment_to_showPinsFragment)
+//            else {
+//                Toast.makeText(context, "No pins to show", Toast.LENGTH_SHORT).show()
+//            }
+       }
     }
 
     override fun onDestroy() {

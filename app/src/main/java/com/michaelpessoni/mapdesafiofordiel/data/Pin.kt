@@ -4,9 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "pins_table")
+@Entity(tableName = "pins")
 data class Pin(
-
     @ColumnInfo(name = "latitude")
     var latitude: Double,
 
@@ -14,5 +13,8 @@ data class Pin(
     var longitude: Double,
 
     @PrimaryKey(autoGenerate = true)
-    var pointId: Long = 0L
+    var pointId: Int? = null
+
 )
+
+

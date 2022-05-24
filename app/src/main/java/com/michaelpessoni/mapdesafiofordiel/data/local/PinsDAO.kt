@@ -13,7 +13,11 @@ interface PinsDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(pin: Pin)
 
-    @Query("SELECT * FROM pins_table")
-    fun observeAllPins(): LiveData<List<Pin>>
+    @Query("SELECT * FROM pins")
+    fun getAllPins(): List<Pin>
+
+    @Query("SELECT * FROM pins WHERE pointId = :id")
+    suspend fun getById(id: Int?) : Pin?
+
 
 }

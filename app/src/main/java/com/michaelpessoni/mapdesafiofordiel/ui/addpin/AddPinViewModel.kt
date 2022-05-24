@@ -1,4 +1,4 @@
-package com.michaelpessoni.mapdesafiofordiel.ui
+package com.michaelpessoni.mapdesafiofordiel.ui.addpin
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -16,28 +16,21 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
-import com.mapbox.maps.extension.observable.eventdata.CameraChangedEventData
-import com.mapbox.maps.extension.style.expressions.dsl.generated.interpolate
-import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
-import com.mapbox.maps.plugin.annotation.generated.PolylineAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
-import com.mapbox.maps.plugin.annotation.generated.createPolylineAnnotationManager
 import com.mapbox.maps.plugin.delegates.listeners.OnCameraChangeListener
 import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
-import com.mapbox.maps.plugin.locationcomponent.generated.LocationComponentSettings
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.michaelpessoni.mapdesafiofordiel.R
 import com.michaelpessoni.mapdesafiofordiel.data.Pin
 import com.michaelpessoni.mapdesafiofordiel.data.local.PinsDAO
 import kotlinx.coroutines.launch
 
-class MapViewModel(private val dataSource: PinsDAO, private val mapView: MapView) : ViewModel() {
-
+class AddPinViewModel(private val dataSource: PinsDAO, private val mapView: MapView) :ViewModel() {
     fun onMapReady() {
         mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
@@ -49,6 +42,14 @@ class MapViewModel(private val dataSource: PinsDAO, private val mapView: MapView
         ) {
             initLocationComponent()
             setupGesturesListener()
+            initLocation()
+        }
+    }
+
+    private fun initLocation() {
+        val locationComponentPlugin = mapView.location
+        locationComponentPlugin.updateSettings {
+            this.enabled = true
         }
     }
 
@@ -63,72 +64,6 @@ class MapViewModel(private val dataSource: PinsDAO, private val mapView: MapView
         locationComponentPlugin.addOnIndicatorBearingChangedListener(
             onIndicatorBearingChangedListener
         )
-    }
-
-    fun initLocationPuck(context: Context) {
-        val locationComponentPlugin = mapView.location
-        locationComponentPlugin.updateSettings {
-            setLocationPuck(context)
-        }
-    }
-
-    private fun LocationComponentSettings.setLocationPuck(
-        context: Context
-    ) {
-        this.enabled = true
-        this.locationPuck = LocationPuck2D(
-            bearingImage = AppCompatResources.getDrawable(
-                context,
-                R.drawable.user_pin,
-            ),
-            shadowImage = AppCompatResources.getDrawable(
-                context,
-                R.drawable.user_puck_icon,
-            ),
-            scaleExpression = interpolate {
-                linear()
-                zoom()
-                stop {
-                    literal(0.0)
-                    literal(0.6)
-                }
-                stop {
-                    literal(20.0)
-                    literal(1.0)
-                }
-            }.toJson()
-        )
-    }
-
-    fun showAllPins() {
-        val annotationApi = mapView.annotations
-        val polylineAnnotationManager = annotationApi.createPolylineAnnotationManager()
-        // Define a list of geographic coordinates to be connected.
-        val points = setPinsToShow(pinsList.value)
-        // Set options for the resulting line layer.
-        val polylineAnnotationOptions: PolylineAnnotationOptions = PolylineAnnotationOptions()
-            .withPoints(points)
-            // Style the line that will be added to the map.
-            .withLineColor("#ee4e8b")
-        polylineAnnotationManager.create(polylineAnnotationOptions)
-    }
-
-    // Observe pins from database
-    private val pinsList = dataSource.observeAllPins()
-
-    // Transform pin into Point to be showed on map
-    fun setPinsToShow(pinsList: List<Pin>?): List<Point> {
-        val pointsList: List<Point>? = pinsList?.map { pin ->
-            Point.fromLngLat(pin.longitude, pin.latitude)
-        }
-
-        return pointsList ?: emptyList()
-    }
-
-    fun savePin(pin: Pin) {
-        viewModelScope.launch {
-            dataSource.insert(pin)
-        }
     }
 
     private val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
@@ -161,20 +96,6 @@ class MapViewModel(private val dataSource: PinsDAO, private val mapView: MapView
 
         }
     }
-
-    private val onCameraChangeListener = OnCameraChangeListener {
-        _currentLongitude.value = mapView.getMapboxMap().cameraState.center.longitude()
-        _currentLatitude.value = mapView.getMapboxMap().cameraState.center.latitude()
-    }
-
-    private val _currentLongitude = MutableLiveData<Double>()
-    val currentLongitude: LiveData<Double>
-        get() = _currentLongitude
-
-    private val _currentLatitude = MutableLiveData<Double>()
-    val currentLatitude: LiveData<Double>
-        get() = _currentLatitude
-
     // Encapsulated LiveData to notify that onCameraTrackDismiss was called
     private val _cameraTrackDismissed = MutableLiveData<Boolean>()
     val cameraTrackDismissed: LiveData<Boolean>
@@ -189,17 +110,22 @@ class MapViewModel(private val dataSource: PinsDAO, private val mapView: MapView
         // mapView.gestures.removeOnMoveListener(onMoveListener)
     }
 
-    fun onDestroy() {
-        mapView.location
-            .removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
-        mapView.location
-            .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
-        mapView.gestures.removeOnMoveListener(onMoveListener)
+    private val _currentLongitude = MutableLiveData<Double>()
+    val currentLongitude: LiveData<Double>
+        get() = _currentLongitude
+
+    private val _currentLatitude = MutableLiveData<Double>()
+    val currentLatitude: LiveData<Double>
+        get() = _currentLatitude
+
+    private val onCameraChangeListener = OnCameraChangeListener {
+        _currentLongitude.value = mapView.getMapboxMap().cameraState.center.longitude()
+        _currentLatitude.value = mapView.getMapboxMap().cameraState.center.latitude()
     }
 
     fun addPinToMap(context: Context) {
 
-         // Create an instance of the Annotation API and get the PointAnnotationManager.
+        // Create an instance of the Annotation API and get the PointAnnotationManager.
         mapView.getMapboxMap().loadStyleUri(
             Style.MAPBOX_STREETS,
             object : Style.OnStyleLoaded {
@@ -255,5 +181,9 @@ class MapViewModel(private val dataSource: PinsDAO, private val mapView: MapView
         }
     }
 
-
+    fun savePin(pin: Pin) {
+        viewModelScope.launch {
+            dataSource.insert(pin)
+        }
+    }
 }

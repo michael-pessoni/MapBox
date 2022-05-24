@@ -6,16 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.mapbox.maps.MapView
 import com.michaelpessoni.mapdesafiofordiel.R
 import com.michaelpessoni.mapdesafiofordiel.data.local.PinsDatabase
 import com.michaelpessoni.mapdesafiofordiel.databinding.ShowPinsFragmentBinding
-import com.michaelpessoni.mapdesafiofordiel.ui.MapViewModel
 
 class ShowPinsFragment : Fragment() {
 
     private lateinit var binding: ShowPinsFragmentBinding
-    private lateinit var viewModel: MapViewModel
+    private lateinit var viewModel: ShowPinsViewModel
     private lateinit var mapView: MapView
 
     override fun onCreateView(
@@ -29,9 +29,9 @@ class ShowPinsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val dataSource = PinsDatabase.getInstance(this.requireContext()).pinsDatabaseDAO
+        val dataSource = PinsDatabase.getInstance(requireActivity().application).pinsDatabaseDAO
         mapView = requireView().findViewById(R.id.mapView)
-        viewModel = MapViewModel(dataSource, mapView)
+        viewModel = ViewModelProvider(this, ShowPinsViewModelFactory(dataSource, mapView))[ShowPinsViewModel::class.java]
 
         viewModel.onMapReady()
 

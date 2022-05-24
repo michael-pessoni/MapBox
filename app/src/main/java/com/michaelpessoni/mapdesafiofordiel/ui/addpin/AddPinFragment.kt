@@ -1,6 +1,5 @@
 package com.michaelpessoni.mapdesafiofordiel.ui.addpin
 
-import android.graphics.Point
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +9,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.mapbox.maps.MapView
 import com.mapbox.maps.extension.observable.eventdata.CameraChangedEventData
@@ -19,13 +18,12 @@ import com.michaelpessoni.mapdesafiofordiel.R
 import com.michaelpessoni.mapdesafiofordiel.data.Pin
 import com.michaelpessoni.mapdesafiofordiel.data.local.PinsDatabase
 import com.michaelpessoni.mapdesafiofordiel.databinding.AddPinFragmentBinding
-import com.michaelpessoni.mapdesafiofordiel.ui.MapViewModel
 
 class AddPinFragment : Fragment(), OnCameraChangeListener {
 
 
     private lateinit var binding: AddPinFragmentBinding
-    private lateinit var viewModel: MapViewModel
+    private lateinit var viewModel: AddPinViewModel
     private lateinit var mapView: MapView
     private lateinit var currentLocation: com.mapbox.geojson.Point
 
@@ -41,9 +39,9 @@ class AddPinFragment : Fragment(), OnCameraChangeListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val dataSource = PinsDatabase.getInstance(this.requireContext()).pinsDatabaseDAO
+        val dataSource = PinsDatabase.getInstance(requireActivity().application).pinsDatabaseDAO
         mapView = requireView().findViewById(R.id.mapView)
-        viewModel = MapViewModel(dataSource, mapView)
+        viewModel = ViewModelProvider(this,AddPinViewModelFactory(dataSource, mapView))[AddPinViewModel::class.java]
 
         viewModel.onMapReady()
 
@@ -78,6 +76,7 @@ class AddPinFragment : Fragment(), OnCameraChangeListener {
             // Create a new pin to save
             val pin = Pin(latitude, longitude)
             viewModel.savePin(pin)
+
             navigateBack()
 
             // Show success
