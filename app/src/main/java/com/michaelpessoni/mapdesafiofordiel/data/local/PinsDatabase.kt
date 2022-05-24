@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.michaelpessoni.mapdesafiofordiel.data.Pin
 
-@Database(entities = [Pin::class], version = 2)
+@Database(entities = [Pin::class], version = 3)
 abstract class PinsDatabase : RoomDatabase() {
 
     abstract val pinsDatabaseDAO: PinsDAO

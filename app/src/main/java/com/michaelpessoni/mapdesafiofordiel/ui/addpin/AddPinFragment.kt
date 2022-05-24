@@ -43,11 +43,10 @@ class AddPinFragment : Fragment(), OnCameraChangeListener {
         mapView = requireView().findViewById(R.id.mapView)
         viewModel = ViewModelProvider(this,AddPinViewModelFactory(dataSource, mapView))[AddPinViewModel::class.java]
 
-        viewModel.onMapReady()
-
-        viewModel.addPinToMap(this@AddPinFragment.requireContext())
+        viewModel.onMapReady(requireContext())
 
         currentLocation = mapView.getMapboxMap().cameraState.center
+
 
         setCoordinatesText()
 

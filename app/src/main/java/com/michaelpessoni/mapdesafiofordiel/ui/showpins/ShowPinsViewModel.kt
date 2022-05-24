@@ -3,6 +3,7 @@ package com.michaelpessoni.mapdesafiofordiel.ui.showpins
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
@@ -19,6 +20,9 @@ import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListen
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.michaelpessoni.mapdesafiofordiel.data.Pin
 import com.michaelpessoni.mapdesafiofordiel.data.local.PinsDAO
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class ShowPinsViewModel(private val dataSource: PinsDAO, private val mapView: MapView): ViewModel() {
     fun onMapReady() {
@@ -111,6 +115,8 @@ class ShowPinsViewModel(private val dataSource: PinsDAO, private val mapView: Ma
 
         // Define a list of geographic coordinates to be connected.
         val points = setPinsToShow(pinsList)
+        println("-------------------------")
+        println(pinsList)
         // Set options for the resulting line layer.
         val polylineAnnotationOptions: PolylineAnnotationOptions = PolylineAnnotationOptions()
             .withPoints(points)
@@ -128,6 +134,7 @@ class ShowPinsViewModel(private val dataSource: PinsDAO, private val mapView: Ma
     }
 
     // Get pins from database
-     val pinsList =  dataSource.getAllPins()
-
+    private val pinsList = runBlocking {
+         dataSource.getAllPins()
+    }
 }

@@ -31,7 +31,7 @@ import com.michaelpessoni.mapdesafiofordiel.data.local.PinsDAO
 import kotlinx.coroutines.launch
 
 class AddPinViewModel(private val dataSource: PinsDAO, private val mapView: MapView) :ViewModel() {
-    fun onMapReady() {
+    fun onMapReady(context: Context) {
         mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
                 .zoom(14.0)
@@ -42,14 +42,29 @@ class AddPinViewModel(private val dataSource: PinsDAO, private val mapView: MapV
         ) {
             initLocationComponent()
             setupGesturesListener()
-            initLocation()
-        }
-    }
+            bitmapFromDrawableRes(
+                context,
+                R.drawable.new_pin_icon
+            )?.let { bitmap ->
+                // Create an instance of the Annotation API and get the PointAnnotationManager.
+                val annotationApi = mapView.annotations
+                val pointAnnotationManager = annotationApi.createPointAnnotationManager(mapView)
+                // Set options for the resulting symbol layer.
+                val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                    // Define a geographic coordinate.
+                    .withPoint(Point.fromLngLat(
+                        mapView.getMapboxMap().cameraState.center.longitude(),
+                        mapView.getMapboxMap().cameraState.center.longitude()
+                    ))
+                    // Specify the bitmap you assigned to the point annotation
+                    // The bitmap will be added to map style automatically.
+                    .withIconImage(bitmap)
+                    .withDraggable(true)
 
-    private fun initLocation() {
-        val locationComponentPlugin = mapView.location
-        locationComponentPlugin.updateSettings {
-            this.enabled = true
+                // Add the resulting pointAnnotation to the map.
+                pointAnnotationManager.create(pointAnnotationOptions)
+
+            }
         }
     }
 
@@ -111,8 +126,6 @@ class AddPinViewModel(private val dataSource: PinsDAO, private val mapView: MapV
     }
 
     private val _currentLongitude = MutableLiveData<Double>()
-    val currentLongitude: LiveData<Double>
-        get() = _currentLongitude
 
     private val _currentLatitude = MutableLiveData<Double>()
     val currentLatitude: LiveData<Double>
@@ -123,39 +136,38 @@ class AddPinViewModel(private val dataSource: PinsDAO, private val mapView: MapV
         _currentLatitude.value = mapView.getMapboxMap().cameraState.center.latitude()
     }
 
-    fun addPinToMap(context: Context) {
-
-        // Create an instance of the Annotation API and get the PointAnnotationManager.
-        mapView.getMapboxMap().loadStyleUri(
-            Style.MAPBOX_STREETS,
-            object : Style.OnStyleLoaded {
-                override fun onStyleLoaded(style: Style) {
-                    bitmapFromDrawableRes(
-                        context,
-                        R.drawable.new_pin_icon
-                    )?.let { bitmap ->
-                        val annotationApi = mapView.annotations
-                        val pointAnnotationManager = annotationApi.createPointAnnotationManager()
-                        // Set options for the resulting symbol layer.
-                        val pointAnnotationOptions: PointAnnotationOptions =
-                            PointAnnotationOptions()
-                                // Define a geographic coordinate.
-                                .withPoint(
-                                    Point.fromLngLat(
-                                        mapView.getMapboxMap().cameraState.center.longitude(),
-                                        mapView.getMapboxMap().cameraState.center.latitude()
-                                    )
-                                )
-                                // Specify the bitmap you assigned to the point annotation
-                                // The bitmap will be added to map style automatically.
-                                .withIconImage(bitmap)
-                        // Add the resulting pointAnnotation to the map.
-                        pointAnnotationManager.create(pointAnnotationOptions)
-                    }
-                }
-            }
-        )
-    }
+//    fun addPinToMap(context: Context, currentLocation: Point) {
+//
+//        // Create an instance of the Annotation API and get the PointAnnotationManager.
+//        mapView.getMapboxMap().loadStyleUri(
+//            Style.MAPBOX_STREETS
+//        ) {
+//            initLocationComponent()
+//            setupGesturesListener()
+//            bitmapFromDrawableRes(
+//                context,
+//                R.drawable.new_pin_icon
+//            )?.let { bitmap ->
+//                val annotationApi = mapView.annotations
+//                val pointAnnotationManager = annotationApi.createPointAnnotationManager()
+//                // Set options for the resulting symbol layer.
+//                val pointAnnotationOptions: PointAnnotationOptions =
+//                    PointAnnotationOptions()
+//                        // Define a geographic coordinate.
+//                        .withPoint(
+//                            Point.fromLngLat(
+//                                mapView.getMapboxMap().cameraState.center.longitude(),
+//                                mapView.getMapboxMap().cameraState.center.latitude()
+//                            )
+//                        )
+//                        // Specify the bitmap you assigned to the point annotation
+//                        // The bitmap will be added to map style automatically.
+//                        .withIconImage(bitmap)
+//                // Add the resulting pointAnnotation to the map.
+//                pointAnnotationManager.create(pointAnnotationOptions)
+//            }
+//        }
+//    }
 
     private fun bitmapFromDrawableRes(context: Context, @DrawableRes resourceId: Int) =
         convertDrawableToBitmap(AppCompatResources.getDrawable(context, resourceId))

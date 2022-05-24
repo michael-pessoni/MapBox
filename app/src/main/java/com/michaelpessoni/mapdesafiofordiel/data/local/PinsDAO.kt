@@ -14,7 +14,7 @@ interface PinsDAO {
     suspend fun insert(pin: Pin)
 
     @Query("SELECT * FROM pins")
-    fun getAllPins(): List<Pin>
+    suspend fun getAllPins(): List<Pin>
 
     @Query("SELECT * FROM pins WHERE pointId = :id")
     suspend fun getById(id: Int?) : Pin?
