@@ -23,5 +23,4 @@ To develop it the following technologies were used:
 # TODO
 
 - Implement tests
-- Refactor MapViewModel for a more readable code
 - Implement new functionalities 
