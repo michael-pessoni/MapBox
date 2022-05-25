@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="100dp"
+        app:behavior_peekHeight="400dp"
         app:cardCornerRadius="30dp"
         app:layout_behavior="@string/bottom_sheet_behavior">
 

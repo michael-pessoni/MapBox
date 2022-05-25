@@ -54,7 +54,7 @@ class AddPinViewModel(private val dataSource: PinsDAO, private val mapView: MapV
                     // Define a geographic coordinate.
                     .withPoint(Point.fromLngLat(
                         mapView.getMapboxMap().cameraState.center.longitude(),
-                        mapView.getMapboxMap().cameraState.center.longitude()
+                        mapView.getMapboxMap().cameraState.center.latitude()
                     ))
                     // Specify the bitmap you assigned to the point annotation
                     // The bitmap will be added to map style automatically.
