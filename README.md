@@ -1,6 +1,6 @@
 # MapBox
 
-This app was developed as a technical challenge for a recuitment process at IEL/Ford.
+This app was developed as a technical challenge for a recuitment process.
 
 # About this
 
